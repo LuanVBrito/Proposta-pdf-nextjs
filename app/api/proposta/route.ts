@@ -13,20 +13,7 @@ import { Poppins } from "next/font/google";
     };
 
   // função de imprimir escopo
-  function imprimirEscopo(node: EscopoNode, nivel = 0): string {
-    let texto = "";
 
-    if (node.label && node.label.trim() !== "") {
-      const indent = "  ".repeat(nivel);
-      texto += `${indent}${node.label}\n`;
-    }
-
-    node.children?.forEach((child) => {
-      texto += imprimirEscopo(child, nivel + 1);
-    });
-
-    return texto;
-  }
   function renderEscopoDesejavelPDF(
     nodes: EscopoNode[],
     doc: PDFKit.PDFDocument,
@@ -35,7 +22,7 @@ import { Poppins } from "next/font/google";
     const BASE_INDENT = 10;
 
     nodes.forEach((node) => {
-      // 👉 PAI EM BOLD
+      // pai
       doc
         .font("Poppins-Bold")
         .fontSize(11)
@@ -44,7 +31,7 @@ import { Poppins } from "next/font/google";
           lineGap: 6,
         });
 
-      // 👉 FILHOS
+      // filho
       if (node.children && node.children.length > 0) {
         doc.font("Regular");
 
@@ -58,6 +45,12 @@ import { Poppins } from "next/font/google";
 
       doc.moveDown(0.3);
     });
+  }
+
+  function formatarDataBR(data: string) {
+    if (!data) return "Não informado";
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
   }
 
 
@@ -168,7 +161,7 @@ export async function POST(req: Request) {
           })
         );
       });
-
+      
       doc.on("error", reject);
 
       // primeira imagem
@@ -408,7 +401,7 @@ export async function POST(req: Request) {
       write("7. Validade da proposta")
 
       doc.font("Regular").fontSize(11).fillColor("black");
-      doc.text(`A proposta atual tem validade de 7 dias corridos, iniciando em ${iproposta || "Não informado"} com termino em ${fproposta || "Não informado"}, após encerramento do período, será necessário revisão do prazo e validação do orçamento.`, {indent: 30});
+      doc.text(`A proposta atual tem validade de 7 dias corridos, iniciando em ${formatarDataBR(iproposta) || "Não informado"} com termino em ${formatarDataBR(fproposta) || "Não informado"}, após encerramento do período, será necessário revisão do prazo e validação do orçamento.`, {indent: 30});
 
       doc.moveDown(1);
 
@@ -519,3 +512,5 @@ export async function POST(req: Request) {
     );
   }
 }
+
+

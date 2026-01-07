@@ -260,18 +260,17 @@ export default function PropostaPage() {
   }
   return (
     <div>
-      <h1>Gerar Proposta</h1>
-      <br /><br />
+      <h1>Gerador Proposta</h1>
 
       <label>Nome do Cliente</label>
-      <div>
+      <div style={{ marginBottom: "12px" }}>
       <input
         placeholder="Nome do cliente"
         value={nomeCliente}
         onChange={(e) => setNomeCliente(e.target.value)}
         style={{
           width: "30%",
-          padding: "8px",
+          padding: "15px",
           border: "1px solid #ccc",
           borderRadius:"6px",
           fontSize: "14px",
@@ -289,7 +288,7 @@ export default function PropostaPage() {
           onChange={(e) => setObjetivo(e.target.value)}
           style={{
             width: "30%",
-            padding: "8px",
+            padding: "15px",
             border: "1px solid #ccc",
             borderRadius: "6px",
             fontSize: "14px",
@@ -316,7 +315,7 @@ export default function PropostaPage() {
           onChange={(e) => setEscopoDesejavel(e.target.value)}
           style={{
             width: "24%",
-            padding: "8px",
+            padding: "15px",
             border: "1px solid #ccc",
             borderRadius: "6px",
             fontSize: "14px",
@@ -337,7 +336,7 @@ export default function PropostaPage() {
             whiteSpace: "nowrap",
           }}
         >
-          Confirmar
+          Confirmar ✅
         </button>
       </div>
 
@@ -345,7 +344,7 @@ export default function PropostaPage() {
       <div
         style={{
           width: "30%",
-          padding: "8px",
+          padding: "15px",
           border: "1px solid #ccc",
           borderRadius:"6px",
           marginBottom: "12px",
@@ -376,7 +375,7 @@ export default function PropostaPage() {
           onChange={(e) => setFuturav(e.target.value)}
           style={{
             width: "30%",
-            padding: "8px",
+            padding: "15px",
             border: "1px solid #ccc",
             borderRadius: "6px",
             fontSize: "14px",
@@ -396,7 +395,7 @@ export default function PropostaPage() {
           onChange={(e) => setRequisitost(e.target.value)}
           style={{
             width: "30%",
-            padding: "8px",
+            padding: "15px",
             border: "1px solid #ccc",
             borderRadius: "6px",
             fontSize: "14px",
@@ -407,47 +406,56 @@ export default function PropostaPage() {
         />
       </div>
 
-      <label>Inicio da Proposta</label>
-      <div style={{ marginBottom: "12px" }}>
-        <textarea
-          ref={textRef}
-          placeholder="xx/xx/xxxx"
-          value={iproposta}
-          onChange={(e) => setIproposta(e.target.value)}
-          style={{
-            width: "7%",
-            padding: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "6px",
-            fontSize: "14px",
-            lineHeight: "1px",
-            resize: "none",
-            boxSizing: "border-box",
-          }}
-        />
+      <div
+        style={{
+          display: "flex",
+          gap: "40px",
+          marginBottom: "20px",
+          alignItems: "flex-start",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <label>Início da Proposta</label>
+          <input
+            type="date"
+            placeholder="xx/xx/xxxx"
+            value={iproposta}
+            onChange={(e) => setIproposta(e.target.value)}
+            style={{
+              width: "140px",
+              padding: "8px",
+              border: "1px solid #ccc",
+              borderRadius: "6px",
+              fontSize: "14px",
+              resize: "none",
+              boxSizing: "border-box",
+            }}
+          />
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <label>Fim da Proposta</label>
+          <input
+            type="date"
+            placeholder="xx/xx/xxxx"
+            value={fproposta}
+            onChange={(e) => setFproposta(e.target.value)}
+            style={{
+              width: "140px",
+              padding: "8px",
+              border: "1px solid #ccc",
+              borderRadius: "6px",
+              fontSize: "14px",
+              resize: "none",
+              boxSizing: "border-box",
+            }}
+          />
+        </div>
       </div>
 
-      <label>Fim da Proposta</label>
-      <div style={{ marginBottom: "12px" }}>
-        <textarea
-          ref={textRef}
-          placeholder="xx/xx/xxxx"
-          value={fproposta}
-          onChange={(e) => setFproposta(e.target.value)}
-          style={{
-            width: "7%",
-            padding: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "6px",
-            fontSize: "14px",
-            lineHeight: "4px",
-            resize: "none",
-            boxSizing: "border-box",
-          }}
-        />
-      </div>
       
       <label>Orçamento</label>
+      <br /><br />
       <div>
       <input
         placeholder="Orçamento"
@@ -455,7 +463,7 @@ export default function PropostaPage() {
         onChange={(e) => setOrcamento(e.target.value)}
         style={{
           width: "30%",
-          padding: "8px",
+          padding: "15px",
           border: "1px solid #ccc",
           borderRadius:"6px",
           fontSize: "14px",

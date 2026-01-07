@@ -13,7 +13,6 @@ import { Poppins } from "next/font/google";
     };
 
   // função de imprimir escopo
-
   function renderEscopoDesejavelPDF(
     nodes: EscopoNode[],
     doc: PDFKit.PDFDocument,
@@ -98,13 +97,67 @@ export async function POST(req: Request) {
     }
 
     const doc = new PDFDocument({ size: "A4", margin: 40 });
+
+    // desenha a logo na primeira página
+    desenharLogo(doc);
+
+    // sempre que uma nova página for criada
+    doc.on("pageAdded", () => {
+      desenharLogo(doc);
+    });
+
     const chunks: Buffer[] = [];
     
-
+    function desenharLogo(doc: PDFKit.PDFDocument) {
+      if (fs.existsSync(logoPath)) {
+        doc.image(logoPath, doc.page.width - 80, 20, {
+          width: 30,
+        });
+      }
+    }
     // fontes
     doc.registerFont("Regular", "public/fonts/Poppins/Poppins-Regular.ttf");
     doc.registerFont("Poppins-Bold", "public/fonts/Poppins/Poppins-Bold.ttf");
 
+    const PAGE = {
+      width: doc.page.width,
+      height: doc.page.height,
+    };
+    const FRAME = {
+      x: 70,
+      y: () => doc.y,
+      width: PAGE.width - 140,
+    };
+
+    function writeG(
+      text: string,
+      options: {
+        indent?: number;
+        lineGap?: number;
+        bold?: boolean;
+        size?: number;
+        color?: string;
+      } = {}
+    ) {
+      const {
+        indent = 0,
+        lineGap = 6,
+        bold = false,
+        size = 11,
+        color = "black",
+      } = options;
+
+      doc
+        .font(bold ? "Poppins-Bold" : "Poppins-Regular")
+        .fontSize(size)
+        .fillColor(color)
+        .text(text, FRAME.x, FRAME.y(), {
+          width: FRAME.width,
+          indent,
+          lineGap,
+          align: "justify",
+        });
+    }
 
     // escrita dos pais e filhos
     function write(
@@ -171,11 +224,7 @@ export async function POST(req: Request) {
       // fundo cinza 
       doc.rect(0, 0, doc.page.width, doc.page.height).fill("#F2F2F2");
       doc.fillColor("black");
-
-      // logo canto superior direito
-      if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, doc.page.width - 110, 20, { width: 30 });
-      }
+      doc.image(logoPath, doc.page.width - 110, 20, { width: 30 });
 
       doc.moveDown(3);
 
@@ -188,6 +237,7 @@ export async function POST(req: Request) {
       write(
         "Pronto para invocar a sua ideia do plano sutil, tirá-la do silêncio do papel e dar forma a ela no reino digital, onde código vira estrutura, intenção vira experiência e conceito vira impacto?",
       { indent: 30});
+      
 
       // inicio
       doc.fillColor("black");
@@ -196,7 +246,7 @@ export async function POST(req: Request) {
 
       write("PROPOSTA COMERCIAL DE PRESTAÇÃO DE SERVIÇOS", {indent: 5});
       doc.moveDown(1);
-
+      
       // texto informativo
       doc.font("Regular").fontSize(11);
 
@@ -210,18 +260,12 @@ export async function POST(req: Request) {
         "Todos os documentos e informações recebidas pela Luis Sousa Software engineer ao longo do processo comercial do qual resultou essa proposta serão tratados da mesma forma pela Luis Sousa Software engineer, com expressa confidencialidade e sigilo, não sendo revelados a nenhuma parte fora da empresa, tenha a Luis Sousa Software engineer assinado ou não qualquer contrato ou acordo de confidencialidade.", { indent: 30 });
 
       doc.addPage();
-      
-      // logo
-      if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, doc.page.width - 110, 20, { width: 30 });
-      }
-
       // objetivo
       doc.font("Poppins-Bold").fontSize(13).fillColor("#05483f");
       write("1. Objetivo do Projeto");
 
       doc.font("Regular").fontSize(11).fillColor("black");
-      write(`${objetivo || "Não informado"}`, {indent : 5});
+      writeG(`${objetivo || "Não informado."}`, {indent : 5});
 
       doc.moveDown(1);
 
@@ -230,16 +274,13 @@ export async function POST(req: Request) {
       write("2. Escopo funcional mapeado");
 
       doc.font("Regular").fontSize(11).fillColor("black");
+      if (escopoDesejavel == null) {
+        writeG("Não informado.")
+      }
       if (escopoDesejavel?.children?.length) {
         renderEscopoDesejavelPDF(escopoDesejavel.children, doc);
       }
 
-
-      //logo      
-      if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, doc.page.width - 110, 20, { width: 30 });
-      }     
-      
       // Futura Versão
       if (futurav && futurav.trim() !== "") {
         doc.font("Poppins-Bold").fontSize(12).fillColor("black");
@@ -267,19 +308,25 @@ export async function POST(req: Request) {
           doc.moveDown(0.5);
         });
       }
+      doc.moveDown(1);
 
       // Metodologia de entrega
       doc.font("Poppins-Bold").fontSize(13).fillColor("#05483f")
-      write("4. Metodologia de Entrega Desenvolvimento de Software")
+      write("3. Metodologia de Entrega Desenvolvimento de Software")
 
       doc.font("Regular").fontSize(11).fillColor("black");
-      doc.text("O desenvolvimento será realizado utilizando metodologias ágeis, baseando-se nos frameworks Kanban e Scrum, com sprints semanais. As entregas serão realizadas todas as segundas-feiras. A comunicação será efetuada por meio de um chat, acompanhada de relatórios de progresso semanais e interações diárias para resolver quaisquer impedimentos que possam surgir.", {indent: 30});
+      writeG("O desenvolvimento será realizado utilizando metodologias ágeis, baseando-se nos frameworks Kanban e Scrum, com sprints semanais. As entregas serão realizadas todas as segundas-feiras. A comunicação será efetuada por meio de um chat, acompanhada de relatórios de progresso semanais e interações diárias para resolver quaisquer impedimentos que possam surgir.", {indent: 30});
       doc.moveDown(1.5);
 
       
       // Requisitos Técnicos
       doc.font("Poppins-Bold").fontSize(13).fillColor("#05483f");
-      write("5. Requisitos Técnicos");
+      write("4. Requisitos Técnicos");
+      
+      doc.font("Regular").fontSize(11).fillColor("black");
+      if (requisitost == "") {
+        writeG("Não informado.")
+      }
 
       // separa as linhas recebidas do front
       const linhas = requisitost
@@ -296,7 +343,7 @@ export async function POST(req: Request) {
 
         // Parte em negrito (a. Banco de Dados:)
         doc.font("Poppins-Bold").fontSize(11).fillColor("black");
-
+        
         if (resto) {
           doc.text(`${letra}. ${titulo}:`, x, doc.y, {
             continued: true,
@@ -319,8 +366,9 @@ export async function POST(req: Request) {
           });
         }
       });
+      doc.moveDown(1);
     
-      // tabela
+      /*// tabela
       doc.font("Poppins-Bold").fontSize(13).fillColor("#05483f");
       write("Cronograma de Desenvolvimento:");
 
@@ -389,19 +437,14 @@ export async function POST(req: Request) {
 
         startY += rowHeight;
       });
-
-      doc.addPage();
-      //logo      
-      if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, doc.page.width - 110, 20, { width: 30 });
-      }  
+      */
 
       // Validade da proposta
       doc.font("Poppins-Bold").fontSize(13).fillColor("#05483f");
-      write("7. Validade da proposta")
+      write("5. Validade da proposta")
 
       doc.font("Regular").fontSize(11).fillColor("black");
-      doc.text(`A proposta atual tem validade de 7 dias corridos, iniciando em ${formatarDataBR(iproposta) || "Não informado"} com termino em ${formatarDataBR(fproposta) || "Não informado"}, após encerramento do período, será necessário revisão do prazo e validação do orçamento.`, {indent: 30});
+      writeG(`A proposta atual tem validade de 7 dias corridos, iniciando em ${formatarDataBR(iproposta) || "Não informado"} com termino em ${formatarDataBR(fproposta) || "Não informado"}, após encerramento do período, será necessário revisão do prazo e validação do orçamento.`, {indent: 30});
 
       doc.moveDown(1);
 
@@ -451,7 +494,7 @@ export async function POST(req: Request) {
       doc.moveDown(1);
 
       doc.font("Poppins-Bold").fontSize(13).fillColor("#05483f");
-      write("8. Informações importantes");
+      write("7. Informações importantes");
 
       const listaInfo = [
         "Sua disponibilidade é fundamental para o cumprimento do prazo;",

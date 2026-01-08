@@ -4,7 +4,12 @@ import { cwd } from "process";
 import path from "path";
 import fs from "fs";
 import { Poppins } from "next/font/google";
+import { Pool } from "pg";
 
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
   type EscopoNode = {
       id: string;
@@ -59,6 +64,7 @@ export async function POST(req: Request) {
 
     const {
       nomeCliente,
+      nomeProjeto,
       objetivo,
       orcamento,
       escopoSelecionado,
@@ -69,6 +75,7 @@ export async function POST(req: Request) {
       fproposta,
     } = body as {
       nomeCliente: string;
+      nomeProjeto: string;
       objetivo: string;
       orcamento: string;
       escopoSelecionado: string[];
@@ -79,9 +86,28 @@ export async function POST(req: Request) {
       fproposta: string;
     };
 
-    // transforma em Set para busca rápida
-    const selecionados = new Set(escopoSelecionado);
-    
+    const insertQuery = `
+    INSERT INTO propostas (
+        nome_cliente,
+        nome_projeto,
+        orcamento,
+        iproposta,
+        fproposta
+    )
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id
+    `;
+    const values = [
+      nomeCliente,
+      nomeProjeto,
+      orcamento,
+      iproposta,
+      fproposta,
+    ];
+    const result = await pool.query(insertQuery, values);
+    const propostaId = result.rows[0].id;
+
+
     // caminhos das imagens
     const imagePath = path.join(cwd(), "public", "capa.jpg");
     const logoPath = path.join(cwd(), "public", "logo.png");
@@ -110,7 +136,7 @@ export async function POST(req: Request) {
     
     function desenharLogo(doc: PDFKit.PDFDocument) {
       if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, doc.page.width - 80, 20, {
+        doc.image(logoPath, doc.page.width - 110, 20, {
           width: 30,
         });
       }
@@ -171,7 +197,7 @@ export async function POST(req: Request) {
         width: TEXT_WIDTH,
         align: "justify",
         lineGap: 8,
-        indent: options.indent ?? 0, // 👈 ISSO resolve
+        indent: options.indent ?? 0,
       });
     }
 

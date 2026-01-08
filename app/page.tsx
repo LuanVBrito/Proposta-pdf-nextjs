@@ -98,6 +98,7 @@ function renderTree(
 // componente
 export default function PropostaPage() {
   const [nomeCliente, setNomeCliente] = useState("");
+  const [nomeProjeto, setNomeProjeto] = useState("");
   const [objetivo, setObjetivo] = useState("");
   const [escopoDesejavel, setEscopoDesejavel] = useState("");
   const [escopoDesejavelTree, setEscopoDesejavelTree] = useState<EscopoNode | null>(null);
@@ -243,6 +244,7 @@ export default function PropostaPage() {
       },
       body: JSON.stringify({
         nomeCliente,
+        nomeProjeto,
         objetivo,
         orcamento,
         escopoSelecionado: escopoSelecionado,
@@ -261,11 +263,12 @@ export default function PropostaPage() {
   return (
     <div>
       <h1>Gerador Proposta</h1>
+      <br />
 
       <label>Nome do Cliente</label>
       <div style={{ marginBottom: "12px" }}>
       <input
-        placeholder="Nome do cliente"
+        placeholder="Nome do Cliente"
         value={nomeCliente}
         onChange={(e) => setNomeCliente(e.target.value)}
         style={{
@@ -277,6 +280,23 @@ export default function PropostaPage() {
           boxSizing:  "border-box"
         }}
       />
+      </div>
+
+      <label>Nome do Projeto</label>
+      <div style={{marginBottom: "12px"}}>
+        <textarea
+          placeholder="Nome do Projeto"
+          value={nomeProjeto}
+          onChange={(e) => setNomeProjeto(e.target.value)}
+          style={{
+            width: "30%",
+            padding: "5px",
+            border: "1px solid #ccc",
+            borderRadius: "6px",
+            fontSize: "14px",
+            resize: "none"
+          }}
+        />
       </div>
 
       <label>Objetivo</label>
@@ -387,7 +407,7 @@ export default function PropostaPage() {
       </div>
 
       <label>Requisitos Técnicos(Digite um por linha)</label>
-      <div style={{ marginBottom: "12px" }}>
+      <div style={{ marginBottom: "11px" }}>
         <textarea
           ref={textRef}
           placeholder="Requisitos Técnicos"
@@ -455,7 +475,6 @@ export default function PropostaPage() {
 
       
       <label>Orçamento</label>
-      <br /><br />
       <div>
       <input
         placeholder="Orçamento"
@@ -467,7 +486,7 @@ export default function PropostaPage() {
           border: "1px solid #ccc",
           borderRadius:"6px",
           fontSize: "14px",
-          boxSizing:  "border-box"
+          boxSizing:  "border-box",
         }}
       />
       </div>

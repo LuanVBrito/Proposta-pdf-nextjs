@@ -262,7 +262,7 @@ export default function PropostaPage() {
   }
   return (
     <div>
-      <h1>Gerador Proposta</h1>
+      <h1>Propostômetro</h1>
       <br />
 
       <label>Nome do Cliente</label>

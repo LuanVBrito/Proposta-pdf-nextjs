@@ -3,13 +3,15 @@ import PDFDocument from "pdfkit";
 import { cwd } from "process";
 import path from "path";
 import fs from "fs";
-import { Poppins } from "next/font/google";
 import { Pool } from "pg";
 
 
-const pool = new Pool({
+export const runtime = "nodejs";
+
+export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
+
 
   type EscopoNode = {
       id: string;
@@ -67,7 +69,6 @@ export async function POST(req: Request) {
       nomeProjeto,
       objetivo,
       orcamento,
-      escopoSelecionado,
       escopoDesejavel,
       futurav,
       requisitost,
@@ -97,16 +98,20 @@ export async function POST(req: Request) {
     VALUES ($1, $2, $3, $4, $5)
     RETURNING id
     `;
+    function normalizeDate(date?: string) {
+      return date && date.trim() !== "" ? date : null;
+    }
+
     const values = [
       nomeCliente,
       nomeProjeto,
       orcamento,
-      iproposta,
-      fproposta,
+      normalizeDate(iproposta),
+      normalizeDate(fproposta),
     ];
+
     const result = await pool.query(insertQuery, values);
     const propostaId = result.rows[0].id;
-
 
     // caminhos das imagens
     const imagePath = path.join(cwd(), "public", "capa.jpg");
@@ -142,8 +147,11 @@ export async function POST(req: Request) {
       }
     }
     // fontes
-    doc.registerFont("Regular", "public/fonts/Poppins/Poppins-Regular.ttf");
-    doc.registerFont("Poppins-Bold", "public/fonts/Poppins/Poppins-Bold.ttf");
+    const fontRegular = path.join(process.cwd(), "public/fonts/Poppins/Poppins-Regular.ttf");
+    const fontBold = path.join(process.cwd(), "public/fonts/Poppins/Poppins-Bold.ttf");
+
+    doc.registerFont("Regular", fontRegular);
+    doc.registerFont("Poppins-Bold", fontBold);
 
     const PAGE = {
       width: doc.page.width,
@@ -197,35 +205,10 @@ export async function POST(req: Request) {
         width: TEXT_WIDTH,
         align: "justify",
         lineGap: 8,
-        indent: options.indent ?? 0,
+        indent: options.indent ?? 0, // 👈 ISSO resolve
       });
     }
 
-
-    function renderEscopoPDF(
-      nodes: EscopoNode[],
-      selecionados: Set<string>,
-      write: (text: string, options?: any) => void,
-      doc: PDFKit.PDFDocument
-    ) {
-      nodes.forEach((node) => {
-        const filhosSelecionados =
-          node.children?.filter((c) => selecionados.has(c.id)) || [];
-
-        // imprime o pai se ele ou algum filho estiver selecionado
-        if (selecionados.has(node.id) || filhosSelecionados.length > 0) {
-
-          write(`${node.id}. ${node.label}`, { indent: 5 });
-
-
-          filhosSelecionados.forEach((child) => {
-            write(`• ${child.id} ${child.label}`, { indent: 25 });
-          });
-
-          doc.moveDown(0.5);
-        }
-      });
-    }
 
     // captura de pdf
     return new Promise((resolve, reject) => {

@@ -448,7 +448,7 @@ export default function PropostaPage() {
           {/* Seção: Identificação */}
           <div className="form-section">
             <div className="section-title">
-              <div className="section-icon">🏢</div>
+              <div className="section-icon"></div>
               Identificação
             </div>
 
@@ -489,7 +489,7 @@ export default function PropostaPage() {
           {/* Seção: Escopo */}
           <div className="form-section">
             <div className="section-title">
-              <div className="section-icon">📋</div>
+              <div className="section-icon"></div>
               Escopo do Projeto
             </div>
 
@@ -529,7 +529,7 @@ export default function PropostaPage() {
           {/* Seção: Detalhes Técnicos */}
           <div className="form-section">
             <div className="section-title">
-              <div className="section-icon">⚙️</div>
+              <div className="section-icon"></div>
               Detalhes Técnicos
             </div>
 
@@ -565,7 +565,7 @@ export default function PropostaPage() {
           {/* Seção: Prazo e Orçamento */}
           <div className="form-section">
             <div className="section-title">
-              <div className="section-icon">💰</div>
+              <div className="section-icon"></div>
               Prazo & Orçamento
             </div>
 

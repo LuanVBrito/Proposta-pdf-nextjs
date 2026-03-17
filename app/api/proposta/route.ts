@@ -465,7 +465,7 @@ export async function POST(req: Request) {
       doc.text(`O orçamento total estimado para o `, {continued: true });
 
       doc.font("Poppins-Bold");
-      doc.text(`investimento do projeto `, {continued: true});
+      doc.text(`R$ investimento do projeto `, {continued: true});
 
       doc.font("Regular");
       doc.text(`é de `, {continued: true});
